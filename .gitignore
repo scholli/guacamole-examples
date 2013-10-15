@@ -1,0 +1,16 @@
+*.out
+build
+lib
+doc/html
+*.gv
+*.dot
+*.o
+*.so
+*.gsm
+editor/guacamole_editor
+guarc/guarc
+tags
+guacamole.sublime-workspace
+include/gua/generated/*
+src/gua/generated/*
+.nfs*
