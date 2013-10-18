@@ -67,13 +67,14 @@ void setup_scene(gua::SceneGraph& graph,
   if (depth_count > 0) {
     gua::GeometryLoader loader;
 
+    float offset(2.f);
     std::vector<gua::math::vec3> directions = {
-      gua::math::vec3(0, 1, 0),
-      gua::math::vec3(0, -1, 0),
-      gua::math::vec3(1, 0, 0),
-      gua::math::vec3(-1, 0, 0),
-      gua::math::vec3(0, 0, 1),
-      gua::math::vec3(0, 0, -1)
+      gua::math::vec3(0, offset, 0),
+      gua::math::vec3(0, -offset, 0),
+      gua::math::vec3(offset, 0, 0),
+      gua::math::vec3(-offset, 0, 0),
+      gua::math::vec3(0, 0, offset),
+      gua::math::vec3(0, 0, -offset)
     };
 
     for (auto direction: directions) {
@@ -139,11 +140,19 @@ int main(int argc, char** argv) {
   auto pipe = new gua::Pipeline();
   pipe->config.set_camera(gua::Camera("/view", "/screen", "main_scenegraph"));
   pipe->config.set_left_resolution(gua::math::vec2ui(width, height));
+  pipe->config.set_enable_fps_display(true);
+  pipe->config.set_enable_frustum_culling(true);
+
   pipe->config.set_enable_ssao(true);
   pipe->config.set_ssao_intensity(2.f);
-  pipe->config.set_enable_fps_display(true);
   pipe->config.set_enable_fxaa(true);
-  pipe->config.set_enable_frustum_culling(false);
+  pipe->config.set_enable_hdr(true);
+  pipe->config.set_hdr_key(5.f);
+  pipe->config.set_enable_bloom(true);
+  pipe->config.set_bloom_radius(10.f);
+  pipe->config.set_bloom_threshold(0.8f);
+  pipe->config.set_bloom_intensity(0.8f);
+
 
   auto window(new gua::Window());
   window->config.set_size(gua::math::vec2ui(width, height));
@@ -170,12 +179,15 @@ int main(int argc, char** argv) {
     time += frame_time;
     timer.reset();
 
-    // for (auto it(graph.begin()); it != graph.end(); ++it) {
-    //   gua::GeometryNode* node(dynamic_cast<gua::GeometryNode*>(*it));
-    //   if (node) {
-    //     node->rotate(frame_time * 3, 1, 1, 0);
-    //   }
-    // }
+    std::function<void (std::shared_ptr<gua::Node>, int)> rotate;
+    rotate = [&](std::shared_ptr<gua::Node> node, int depth) {
+      node->rotate(frame_time * (1+depth) * 0.5, 1, 1, 0);
+      for (auto child: node->get_children()) {
+        rotate(child, ++depth);
+      }
+    };
+
+    rotate(graph["/root_ape"], 1);
 
     for (int i = 0; i < lights.size(); ++i) {
       lights[i]->rotate(
