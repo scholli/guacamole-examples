@@ -16,6 +16,8 @@ set(GUACAMOLE_PACKAGENAME "GUACAMOLE")
 
 # We require at least version 2.8.0
 cmake_minimum_required(VERSION 2.8.0)
+SET(GUA_LIBRARY_DIRS "NOT FOUND" CACHE PATH "description")
+SET(GUA_INCLUDE_DIRS "NOT FOUND" CACHE PATH "description")
 
 # Location where cmake first looks for modules.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
@@ -24,33 +26,57 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 # Configure and find libraries
 ################################################################
 
+include(find_compiler)
+
+#guacamole has to be found first because of externals...
+include(find_guacamole)
+include(define_macros)
+
 include(find_schism)
 include(find_boost)
-include(find_ev)
-include(find_zmq)
-include(find_protobuf)
 include(find_bullet)
-include(find_guacamole)
+include(find_assimp)
+include(find_json)
+include(find_cuda)
+
+set(LIB_PATH
+    ${SCHISM_LIBRARY_DIRS}
+    ${BOOST_LIBRARY_DIRS}
+    #${EV_LIBRARY_DIRS}
+    #${ZMQ_LIBRARY_DIRS}
+    #${PROTOBUF_LIBRARY_DIRS}
+    ${BULLET_LIBRARY_DIRS}
+    ${GUA_LIBRARY_DIRS}
+	${ASSIMP_LIBRARY_DIRS}
+	${JSON_LIBRARY_DIRS}
+	${CUDA_LIBRARY_DIRS}
+)
+link_directories(${LIB_PATH})
 
 set(LIBS
     ${SCHISM_LIBRARIES}
     ${BOOST_LIBRARIES}
-    ${EV_LIBRARIES}
-    ${ZMQ_LIBRARIES}
-    ${PROTOBUF_LIBRARIES}
+    #${EV_LIBRARIES}
+    #${ZMQ_LIBRARIES}
+    #${PROTOBUF_LIBRARIES}
     ${BULLET_LIBRARIES}
     ${GUA_LIBRARIES}
+	${ASSIMP_LIBRARIES}
+	${JSON_LIBRARIES}
+	${CUDA_LIBRARIES}
 )
 link_libraries(${LIBS})
 
 set(INCLUDE_PATHS
     ${SCHISM_INCLUDE_DIRS}
     ${BOOST_INCLUDE_DIRS}
-    ${EV_INCLUDE_DIRS}
-    ${ZMQ_INCLUDE_DIRS}
-    ${PROTOBUF_INCLUDE_DIRS}
+    #${EV_INCLUDE_DIRS}
+    #${ZMQ_INCLUDE_DIRS}
+    #${PROTOBUF_INCLUDE_DIRS}
     ${BULLET_INCLUDE_DIRS}
     ${GUA_INCLUDE_DIRS}
+	${ASSIMP_INCLUDE_DIRS}
+	${JSON_INCLUDE_DIRS}
 )
 include_directories(${INCLUDE_PATHS})
 
@@ -58,9 +84,14 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-set(CMAKE_CXX_FLAGS_RELEASE "-s -O4 --std=c++0x -fpermissive")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall --std=c++0x -fpermissive")
-
+IF (UNIX)
+	set(CMAKE_CXX_FLAGS_RELEASE "-s -O4 --std=c++0x -fpermissive")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall --std=c++0x -fpermissive")
+ELSEIF(MSVC)
+	set(CMAKE_CXX_FLAGS_RELEASE "-D _SECURE_SCL=0 -D _SCL_SECURE_NO_WARNINGS -D _CRT_SECURE_NO_DEPRECATE /MD /MP")
+	set(CMAKE_CXX_FLAGS_DEBUG "-D _DEBUG /MDd /Zi")
+ENDIF(UNIX)
+	
 ################################################################
 # Create examples
 ################################################################
@@ -80,29 +111,21 @@ message( " build type: ${CMAKE_BUILD_TYPE}" )
 message( "" )
 message( " schism:" )
 message( "   library: ${SCHISM_LIBRARIES}" )
+message( "   lib path: ${SCHISM_LIBRARY_DIRS}" )
 message( "   include: ${SCHISM_INCLUDE_DIRS}" )
 message( "" )
 message( " boost:" )
 message( "   library: ${BOOST_LIBRARIES}" )
+message( "   lib path: ${BOOST_LIBRARY_DIRS}" )
 message( "   include: ${BOOST_INCLUDE_DIRS}" )
-message( "" )
-message( " ev:" )
-message( "   library: ${EV_LIBRARIES}" )
-message( "   include: ${EV_INCLUDE_DIRS}" )
-message( "" )
-message( " zmq:" )
-message( "   library: ${ZMQ_LIBRARIES}" )
-message( "   include: ${ZMQ_INCLUDE_DIRS}" )
-message( "" )
-message( " protobuf:" )
-message( "   library: ${PROTOBUF_LIBRARIES}" )
-message( "   include: ${PROTOBUF_INCLUDE_DIRS}" )
 message( "" )
 message( " bullet:" )
 message( "   library: ${BULLET_LIBRARIES}" )
+message( "   lib path: ${BULLET_LIBRARY_DIRS}" )
 message( "   include: ${BULLET_INCLUDE_DIRS}" )
 message( "" )
 message( " guacamole:" )
 message( "   library: ${GUA_LIBRARIES}" )
+message( "   lib path: ${GUA_LIBRARY_DIRS}" )
 message( "   include: ${GUA_INCLUDE_DIRS}" )
 message( "" )

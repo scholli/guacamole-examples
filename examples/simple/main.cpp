@@ -22,19 +22,9 @@
 #include <gua/guacamole.hpp>
 
 #include <gua/platform.hpp>
-#if GUA_COMPILER == GUA_COMPILER_MSVC&& SCM_COMPILER_VER <= 1600
-#include <boost/thread.hpp>
-#include <boost/chrono/include.hpp>
 
-namespace this_thread = boost::this_thread;
-namespace chrono = boost::chrono;
-#else
 #include <thread>
 #include <chrono>
-
-namespace this_thread = std::this_thread;
-namespace chrono = std::chrono;
-#endif
 
 int main(int argc, char** argv) {
 
@@ -62,13 +52,14 @@ int main(int argc, char** argv) {
 
   auto pipe = new gua::Pipeline();
   pipe->config.set_camera(gua::Camera("/screen/view", "/screen", "main_scenegraph"));
+  pipe->config.set_enable_fps_display(true);
   pipe->set_window(new gua::Window());
 
   gua::Renderer renderer({pipe});
-
+  
   // application loop
   while (true) {
-    this_thread::sleep_for(chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
     renderer.queue_draw({&graph});
   }
