@@ -140,6 +140,7 @@ IF (        BOOST_INCLUDE_DIRS
         MESSAGE(FATAL_ERROR "guacamole_boost.cmake: unable to find boost library")
     ELSE (NOT _GUA_BOOST_FOUND_LIB_DIR)
         SET(BOOST_LIBRARY_DIRS       ${_GUA_BOOST_FOUND_LIB_DIR}       CACHE STRING "The boost library directory")
+		FILE(GLOB BOOST_LIBRARIES ${_GUA_BOOST_FOUND_LIB_DIR}/*.so)
 		message("--  found matching version")
     ENDIF (NOT _GUA_BOOST_FOUND_LIB_DIR)
 
