@@ -25,7 +25,7 @@ if (WIN32)
 endif (WIN32)
 
 if (UNIX)
-    if (CMAKE_COMPILER_IS_GNUCC)
+    if (CMAKE_COMPILER_IS_GNUCXX)
         #find out the version of gcc being used.
         exec_program(${CMAKE_CXX_COMPILER}
                      ARGS --version
@@ -37,7 +37,7 @@ if (UNIX)
         set (GUA_COMPILER_SUFFIX "gcc${_COMPILER_VERSION}")
         #set (GUA_COMPILER_SUFFIX "")
         #message(${GUA_COMPILER_SUFFIX})
-    endif (CMAKE_COMPILER_IS_GNUCC)
+    endif (CMAKE_COMPILER_IS_GNUCXX)
 endif(UNIX)
 
 if (GUA_COMPILER_SUFFIX STREQUAL "")
