@@ -19,6 +19,10 @@ cmake_minimum_required(VERSION 2.8.0)
 SET(GUA_LIBRARY_DIRS "NOT FOUND" CACHE PATH "description")
 SET(GUA_INCLUDE_DIRS "NOT FOUND" CACHE PATH "description")
 
+if (UNIX)
+	find_package(PkgConfig)
+endif(UNIX)
+
 # Location where cmake first looks for modules.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
@@ -35,7 +39,12 @@ include(define_macros)
 include(find_schism)
 include(find_boost)
 include(find_bullet)
-include(find_assimp)
+if (UNIX)
+  pkg_check_modules(ASSIMP REQUIRED assimp)
+  pkg_check_modules(JSON REQUIRED jsoncpp)
+elseif (WIN32)
+  include(find_assimp)
+endif (UNIX)
 include(find_json)
 include(find_cuda)
 
