@@ -31,20 +31,21 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 ################################################################
 
 include(find_compiler)
-
-#guacamole has to be found first because of externals...
 include(find_guacamole)
+
 include(define_macros)
 
 include(find_schism)
 include(find_boost)
 include(find_bullet)
+
 if (UNIX)
   pkg_check_modules(ASSIMP REQUIRED assimp)
   pkg_check_modules(JSON REQUIRED jsoncpp)
 elseif (WIN32)
   include(find_assimp)
 endif (UNIX)
+
 include(find_json)
 include(find_cuda)
 
@@ -74,7 +75,8 @@ set(LIBS
 	${JSON_LIBRARIES}
 	${CUDA_LIBRARIES}
 )
-link_libraries(${LIBS})
+message(${LIBS})
+#link_libraries(${LIBS})
 
 set(INCLUDE_PATHS
     ${SCHISM_INCLUDE_DIRS}

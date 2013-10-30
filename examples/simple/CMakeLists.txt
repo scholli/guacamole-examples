@@ -9,7 +9,7 @@ ADD_EXECUTABLE( ${_EXE_NAME}
     ${EXAMPLE_SRC}
 )
 
-TARGET_LINK_LIBRARIES( ${_EXE_NAME} )
+TARGET_LINK_LIBRARIES( ${_EXE_NAME} debug ${LIBS} optimized ${LIBS})
 
 # copy runtime libraries as a post-build process
 gua_copy_runtime_dependencies ( ${_EXE_NAME} \"${GLOBAL_EXT_DIR}/bin/$(Configuration)/\" \"${EXECUTABLE_OUTPUT_PATH}/$(Configuration)/\")
