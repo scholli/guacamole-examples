@@ -11,10 +11,10 @@
 	"build_systems":
 	[
 	  {
-	    "name": "guacamole-project",
+	    "name": "guacamole-examples",
 	    "file_regex": "^(..[^:]*):(.*)$",
-	    "working_dir": "${project_path}",
-	    "cmd":  ["./make.sh"]
+	    "working_dir": "${project_path}/..",
+	    "cmd":  ["./scripts/make.sh"]
 	  }
 	]
 }

@@ -50,12 +50,11 @@ int main(int argc, char** argv) {
   screen->data.set_size(gua::math::vec2(1.6f, 0.9f));
   screen->translate(0, 0, 0.f);
 
-  auto view = graph.add_node<gua::ViewNode>("/screen", "view");
-  view->data.set_stereo_width(0.1f);
-  view->translate(0, 0, 1.5);
+  auto eye = graph.add_node<gua::TransformNode>("/screen", "eye");
+  eye->translate(0, 0, 1.5);
 
   auto pipe = new gua::Pipeline();
-  pipe->config.set_camera(gua::Camera("/screen/view", "/screen", "main_scenegraph"));
+  pipe->config.set_camera(gua::Camera("/screen/eye", "/screen/eye", "/screen", "/screen", "main_scenegraph"));
   pipe->config.set_enable_fps_display(true);
   pipe->set_window(new gua::Window());
 

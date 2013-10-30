@@ -25,10 +25,10 @@
 const std::string geometry("data/objects/monkey.obj");
 // const std::string geometry("data/objects/cube.obj");
 
-std::vector<std::shared_ptr<gua::GroupNode>> add_lights(gua::SceneGraph& graph,
+std::vector<std::shared_ptr<gua::TransformNode>> add_lights(gua::SceneGraph& graph,
                                                   int count) {
 
-  std::vector<std::shared_ptr<gua::GroupNode>> lights(count);
+  std::vector<std::shared_ptr<gua::TransformNode>> lights(count);
 
   for (int i(0); i < count; ++i) {
     scm::math::vec3 randdir(gua::math::random::get(-1.f, 1.f),
@@ -46,7 +46,7 @@ std::vector<std::shared_ptr<gua::GroupNode>> add_lights(gua::SceneGraph& graph,
 
     sphere_geometry->scale(0.04, 0.04, 0.04);
 
-    lights[i] = graph.add_node("/", std::make_shared<gua::GroupNode>("light" + gua::string_utils::to_string(i)));
+    lights[i] = graph.add_node("/", std::make_shared<gua::TransformNode>("light" + gua::string_utils::to_string(i)));
     lights[i]->add_child(sphere_geometry);
     lights[i]->translate(randdir[0], randdir[1], randdir[2]);
 
@@ -127,15 +127,16 @@ int main(int argc, char** argv) {
   screen->data.set_size(gua::math::vec2(1.6, 0.9));
   screen->translate(0, 0, 1.f);
 
-  auto view = graph.add_node<gua::ViewNode>("/", "view");
-  view->data.set_stereo_width(0.1f);
-  view->translate(0, 0, 2.5);
+  auto eye = graph.add_node<gua::TransformNode>("/", "eye");
+  eye->translate(0, 0, 2.5);
 
   unsigned width = 1500;
   unsigned height = 1500 * 9 / 16;
 
   auto pipe = new gua::Pipeline();
-  pipe->config.set_camera(gua::Camera("/view", "/screen", "main_scenegraph"));
+  pipe->config.set_camera(gua::Camera("/eye", "/eye",
+                                      "/screen", "/screen",
+                                      "main_scenegraph"));
   pipe->config.set_left_resolution(gua::math::vec2ui(width, height));
   pipe->config.set_enable_fps_display(true);
   pipe->config.set_enable_frustum_culling(true);
