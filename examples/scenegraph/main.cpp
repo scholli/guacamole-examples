@@ -20,10 +20,7 @@
  ******************************************************************************/
 
 #include <gua/guacamole.hpp>
-#include <gua/utils/KDTree.hpp>
 
-//#include  <google/profiler.h>
-//#include  <google/heap-profiler.h>
 
 const std::string geometry("data/objects/monkey.obj");
 // const std::string geometry("data/objects/cube.obj");
@@ -169,11 +166,11 @@ int main(int argc, char** argv) {
   timer.start();
 
   double time(0);
-  float desired_frame_time(1.0 / 60.0);
-
-  gua::events::MainLoop loop;
+  double desired_frame_time(1.0 / 60.0);
 
   // application loop
+  gua::events::MainLoop loop;
+
   gua::events::Ticker ticker(loop, desired_frame_time);
 
   ticker.on_tick.connect([&]() {

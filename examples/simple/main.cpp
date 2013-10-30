@@ -56,14 +56,16 @@ int main(int argc, char** argv) {
 
   auto pipe = new gua::Pipeline();
   pipe->config.set_camera(gua::Camera("/screen/view", "/screen", "main_scenegraph"));
+  pipe->config.set_enable_fps_display(true);
   pipe->set_window(new gua::Window());
 
   gua::Renderer renderer({pipe});
 
   // application loop
   while (true) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     teapot->rotate(0.1, 0, 1, 0);
+
     renderer.queue_draw({&graph});
   }
 
