@@ -171,8 +171,10 @@ int main(int argc, char** argv) {
   double time(0);
   float desired_frame_time(1.0 / 60.0);
 
+  gua::events::MainLoop loop;
+
   // application loop
-  gua::events::Ticker ticker(desired_frame_time);
+  gua::events::Ticker ticker(loop, desired_frame_time);
 
   ticker.on_tick.connect([&]() {
     double frame_time(timer.get_elapsed());
@@ -200,7 +202,6 @@ int main(int argc, char** argv) {
     renderer.queue_draw({&graph});
   });
 
-  gua::events::MainLoop loop;
   loop.start();
 
   return 0;
