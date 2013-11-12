@@ -16,8 +16,6 @@ set(GUACAMOLE_PACKAGENAME "GUACAMOLE")
 
 # We require at least version 2.8.0
 cmake_minimum_required(VERSION 2.8.0)
-SET(GUA_LIBRARY_DIRS "NOT FOUND" CACHE PATH "description")
-SET(GUA_INCLUDE_DIRS "NOT FOUND" CACHE PATH "description")
 
 if (UNIX)
 	find_package(PkgConfig)
@@ -56,7 +54,7 @@ set(LIB_PATH
     #${ZMQ_LIBRARY_DIRS}
     #${PROTOBUF_LIBRARY_DIRS}
     ${BULLET_LIBRARY_DIRS}
-    ${GUA_LIBRARY_DIRS}
+    ${GUACAMOLE_LIBRARY_DIRS}
 	${ASSIMP_LIBRARY_DIRS}
 	${JSON_LIBRARY_DIRS}
 	${CUDA_LIBRARY_DIRS}
@@ -70,7 +68,7 @@ set(LIBS
     #${ZMQ_LIBRARIES}
     #${PROTOBUF_LIBRARIES}
     ${BULLET_LIBRARIES}
-    ${GUA_LIBRARIES}
+    ${GUACAMOLE_LIBRARIES}
 	${ASSIMP_LIBRARIES}
 	${JSON_LIBRARIES}
 	${CUDA_LIBRARIES}
@@ -85,7 +83,7 @@ set(INCLUDE_PATHS
     #${ZMQ_INCLUDE_DIRS}
     #${PROTOBUF_INCLUDE_DIRS}
     ${BULLET_INCLUDE_DIRS}
-    ${GUA_INCLUDE_DIRS}
+    ${GUACAMOLE_INCLUDE_DIRS}
 	${ASSIMP_INCLUDE_DIRS}
 	${JSON_INCLUDE_DIRS}
 )
@@ -136,7 +134,7 @@ message( "   lib path: ${BULLET_LIBRARY_DIRS}" )
 message( "   include: ${BULLET_INCLUDE_DIRS}" )
 message( "" )
 message( " guacamole:" )
-message( "   library: ${GUA_LIBRARIES}" )
-message( "   lib path: ${GUA_LIBRARY_DIRS}" )
-message( "   include: ${GUA_INCLUDE_DIRS}" )
+message( "   library: ${GUACAMOLE_LIBRARIES}" )
+message( "   lib path: ${GUACAMOLE_LIBRARY_DIRS}" )
+message( "   include: ${GUACAMOLE_INCLUDE_DIRS}" )
 message( "" )
