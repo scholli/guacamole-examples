@@ -73,7 +73,6 @@ set(LIBS
 	${JSON_LIBRARIES}
 	${CUDA_LIBRARIES}
 )
-message(${LIBS})
 #link_libraries(${LIBS})
 
 set(INCLUDE_PATHS
