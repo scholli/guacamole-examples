@@ -4,13 +4,13 @@
 SET(GUACAMOLE_INCLUDE_SEARCH_DIRS
   ${GUACAMOLE_INCLUDE_DIRS}
   ${GUACAMOLE_INCLUDE_SEARCH_DIR}
-  /opt/guacamole/current  
+  /opt/guacamole/guacamole/include
 )
 
 SET(GUACAMOLE_LIBRARY_SEARCH_DIRS
   ${GUACAMOLE_LIBRARY_DIRS}
   ${GUACAMOLE_LIBRARY_SEARCH_DIR}
-  /opt/guacamole/current/lib/linux_x86
+  /opt/guacamole/guacamole/lib
 )
 
 ##############################################################################
