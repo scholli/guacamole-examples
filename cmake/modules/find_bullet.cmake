@@ -8,7 +8,7 @@ SET(BULLET_LIBRARY_SEARCH_DIRS
     /opt/bullet/current/bullet-build
 )
 
-message(STATUS "-- checking for BULLET")
+message("-- checking for BULLET")
 
 IF (NOT BULLET_INCLUDE_DIRS)
 
@@ -80,7 +80,7 @@ IF (        BULLET_INCLUDE_DIRS
         MESSAGE(FATAL_ERROR "find_bullet.cmake: unable to find bullet libraries")
     ELSE (NOT _BULLET_FOUND_LIB_DIR)
 		SET(BULLET_LIBRARY_DIRS ${_BULLET_FOUND_LIB_DIR} CACHE STRING "The bullet library directory")
-        message(STATUS "--  found matching version")
+        message("--  found matching version")
     ENDIF (NOT _BULLET_FOUND_LIB_DIR)
     
     FOREACH(_LIB_DIR ${_BULLET_FOUND_LIB_DIR})

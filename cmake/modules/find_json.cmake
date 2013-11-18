@@ -8,7 +8,7 @@ SET(JSON_LIBRARY_SEARCH_DIRS
     /opt/json/current/json-build
 )
 
-message(STATUS "-- checking for JSON")
+message("-- checking for JSON")
 
 IF (NOT JSON_INCLUDE_DIRS)
 
@@ -63,7 +63,7 @@ IF (        JSON_INCLUDE_DIRS
         MESSAGE(FATAL_ERROR "find_json.cmake: unable to find json libraries")
     ELSE (NOT _JSON_FOUND_LIB_DIR)
 		SET(JSON_LIBRARY_DIRS ${_JSON_FOUND_LIB_DIR} CACHE STRING "The json library directory")
-        message(STATUS "--  found matching version")
+        message("--  found matching version")
     ENDIF (NOT _JSON_FOUND_LIB_DIR)
     
     FOREACH(_LIB_DIR ${_JSON_FOUND_LIB_DIR})

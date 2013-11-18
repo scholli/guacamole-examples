@@ -43,12 +43,12 @@ int main(int argc, char** argv) {
   auto teapot_geometry(loader.create_geometry_from_file("teapot", "./data/objects/teapot.obj", "Red", gua::GeometryLoader::NORMALIZE_POSITION | gua::GeometryLoader::NORMALIZE_SCALE));
   
   auto teapot = graph.add_node("/", teapot_geometry);
-  teapot->translate(-1.f, 0.f, 0.f);
+  teapot->translate(-0.5f, 0.f, 0.f);
 
 //#else
   //gua::GeometryLoader loader;
 
-  auto volume_geometry(loader.create_geometry_from_file("volume", "./data/volumes/head_w256_h256_d225_c1_b8.raw", "Volume",gua::GeometryLoader::NORMALIZE_POSITION));
+  auto volume_geometry(loader.create_geometry_from_file("volume", "./data/volumes/BostonTeapot_w256_h256_d178_c1_b8.raw", "Volume",gua::GeometryLoader::NORMALIZE_POSITION));
   //auto volume_geometry(volume_loader.load("./data/volumes/head_w256_h256_d225_c1_b8.raw", 0));
 
   //auto teapot = graph.add_node("/", teapot_geometry);
@@ -56,6 +56,8 @@ int main(int argc, char** argv) {
   auto volume = graph.add_node("/", volume_geometry);
   //volume->translate(-0.5f, -0.5f, -0.5f);
   volume->scale(0.5f);
+  volume->translate(0.5f, 0.f, 0.f);
+  
 #endif
  
   auto light = graph.add_node<gua::PointLightNode>("/", "light");
@@ -73,7 +75,7 @@ int main(int argc, char** argv) {
   pipe->config.set_camera(gua::Camera("/screen/eye", "/screen/eye", "/screen", "/screen", "main_scenegraph"));
   pipe->config.set_enable_fps_display(true);
   pipe->set_window(new gua::Window());
-  pipe->config.background_color = gua::PipelineConfiguration::background_color_struct(gua::utils::Color3f(0.4f, 0.4f, 0.4f));
+  pipe->config.background_color = gua::PipelineConfiguration::background_color_struct(gua::utils::Color3f(0.0f, 0.0f, 0.0f));
 
   pipe->print_shaders("./tmp");
   
