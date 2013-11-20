@@ -50,9 +50,6 @@ include(find_cuda)
 set(LIB_PATH
     ${SCHISM_LIBRARY_DIRS}
     ${BOOST_LIBRARY_DIRS}
-    #${EV_LIBRARY_DIRS}
-    #${ZMQ_LIBRARY_DIRS}
-    #${PROTOBUF_LIBRARY_DIRS}
     ${BULLET_LIBRARY_DIRS}
     ${GUACAMOLE_LIBRARY_DIRS}
 	${ASSIMP_LIBRARY_DIRS}
@@ -64,9 +61,6 @@ link_directories(${LIB_PATH})
 set(LIBS
     ${SCHISM_LIBRARIES}
     ${BOOST_LIBRARIES}
-    #${EV_LIBRARIES}
-    #${ZMQ_LIBRARIES}
-    #${PROTOBUF_LIBRARIES}
     ${BULLET_LIBRARIES}
     ${GUACAMOLE_LIBRARIES}
 	${ASSIMP_LIBRARIES}
@@ -78,9 +72,6 @@ set(LIBS
 set(INCLUDE_PATHS
     ${SCHISM_INCLUDE_DIRS}
     ${BOOST_INCLUDE_DIRS}
-    #${EV_INCLUDE_DIRS}
-    #${ZMQ_INCLUDE_DIRS}
-    #${PROTOBUF_INCLUDE_DIRS}
     ${BULLET_INCLUDE_DIRS}
     ${GUACAMOLE_INCLUDE_DIRS}
 	${ASSIMP_INCLUDE_DIRS}
@@ -99,7 +90,7 @@ ELSEIF(MSVC)
 	set(CMAKE_CXX_FLAGS_RELEASE "-D _SECURE_SCL=0 -D _SCL_SECURE_NO_WARNINGS -D _CRT_SECURE_NO_DEPRECATE /MD /MP")
 	set(CMAKE_CXX_FLAGS_DEBUG "-D _DEBUG /MDd /Zi")
 ENDIF(UNIX)
-	
+
 ################################################################
 # Create examples
 ################################################################
@@ -134,6 +125,6 @@ message(STATUS "   include: ${BULLET_INCLUDE_DIRS}" )
 message(STATUS "" )
 message(STATUS " guacamole:" )
 message(STATUS "   library: ${GUACAMOLE_LIBRARIES}" )
-message(STATUS "   lib path: ${GUACAMOLE_LIBRARY_DIRS}" )
+message(STATUS "   library path: ${GUACAMOLE_LIBRARY_DIRS}" )
 message(STATUS "   include: ${GUACAMOLE_INCLUDE_DIRS}" )
 message(STATUS "" )
