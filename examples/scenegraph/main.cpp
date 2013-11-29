@@ -123,15 +123,15 @@ int main(int argc, char** argv) {
 
   auto lights = add_lights(graph, 50);
 
+  unsigned width = 1500;
+  unsigned height = 1500 * 9 / 16;
+
   auto screen = graph.add_node<gua::ScreenNode>("/", "screen");
-  screen->data.set_size(gua::math::vec2(1.6, 0.9));
+  screen->data.set_size(gua::math::vec2(width*0.001, height*0.001));
   screen->translate(0, 0, 1.f);
 
   auto eye = graph.add_node<gua::TransformNode>("/", "eye");
   eye->translate(0, 0, 2.5);
-
-  unsigned width = 1500;
-  unsigned height = 1500 * 9 / 16;
 
   auto pipe = new gua::Pipeline();
   pipe->config.set_camera(gua::Camera("/eye", "/eye",
@@ -156,6 +156,12 @@ int main(int argc, char** argv) {
   window->config.set_size(gua::math::vec2ui(width, height));
   window->config.set_left_resolution(gua::math::vec2ui(width, height));
   window->config.set_enable_vsync(true);
+
+  window->on_resize.connect([&](gua::math::vec2ui const& new_size){
+    window->config.set_left_resolution(new_size);
+    pipe->config.set_left_resolution(new_size);
+    screen->data.set_size(gua::math::vec2(0.001 * new_size.x, 0.001 * new_size.y));
+  });
 
   pipe->set_window(window);
 
