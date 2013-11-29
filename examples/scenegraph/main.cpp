@@ -195,9 +195,18 @@ int main(int argc, char** argv) {
     }
 
     graph["/root_ape"]->rotate(15 * frame_time, 0, 1, 0);
-    //graph["/screen"]->rotate(20*frame_time, 0, 1, 0);
 
-    renderer.queue_draw({&graph});
+    window->process_events();
+    if (window->should_close()) {
+      // renderer.stop();
+
+      // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+      window->close();
+      loop.stop();
+    } else {
+      renderer.queue_draw({&graph});
+    }
   });
 
   loop.start();
