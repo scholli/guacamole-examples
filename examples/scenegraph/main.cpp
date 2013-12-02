@@ -155,7 +155,9 @@ int main(int argc, char** argv) {
   auto window(new gua::Window());
   window->config.set_size(gua::math::vec2ui(width, height));
   window->config.set_left_resolution(gua::math::vec2ui(width, height));
+  window->config.set_window_position(gua::math::vec2ui(500, 500));
   window->config.set_enable_vsync(true);
+  window->config.set_monitor(0);
 
   window->on_resize.connect([&](gua::math::vec2ui const& new_size){
     window->config.set_left_resolution(new_size);
