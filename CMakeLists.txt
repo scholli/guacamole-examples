@@ -45,7 +45,6 @@ elseif (WIN32)
 endif (UNIX)
 
 include(find_json)
-include(find_cuda)
 
 set(LIB_PATH
     ${SCHISM_LIBRARY_DIRS}
