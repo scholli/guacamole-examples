@@ -45,7 +45,6 @@ elseif (WIN32)
 endif (UNIX)
 
 include(find_json)
-include(find_cuda)
 
 set(LIB_PATH
     ${SCHISM_LIBRARY_DIRS}
@@ -54,7 +53,6 @@ set(LIB_PATH
     ${GUACAMOLE_LIBRARY_DIRS}
 	${ASSIMP_LIBRARY_DIRS}
 	${JSON_LIBRARY_DIRS}
-	${CUDA_LIBRARY_DIRS}
 )
 link_directories(${LIB_PATH})
 
@@ -65,7 +63,6 @@ set(LIBS
     ${GUACAMOLE_LIBRARIES}
 	${ASSIMP_LIBRARIES}
 	${JSON_LIBRARIES}
-	${CUDA_LIBRARIES}
 )
 #link_libraries(${LIBS})
 
