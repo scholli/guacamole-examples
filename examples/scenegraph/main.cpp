@@ -20,18 +20,15 @@
  ******************************************************************************/
 
 #include <gua/guacamole.hpp>
-#include <gua/utils/KDTree.hpp>
 
-//#include  <google/profiler.h>
-//#include  <google/heap-profiler.h>
 
 const std::string geometry("data/objects/monkey.obj");
 // const std::string geometry("data/objects/cube.obj");
 
-std::vector<std::shared_ptr<gua::GroupNode>> add_lights(gua::SceneGraph& graph,
+std::vector<std::shared_ptr<gua::TransformNode>> add_lights(gua::SceneGraph& graph,
                                                   int count) {
 
-  std::vector<std::shared_ptr<gua::GroupNode>> lights(count);
+  std::vector<std::shared_ptr<gua::TransformNode>> lights(count);
 
   for (int i(0); i < count; ++i) {
     scm::math::vec3 randdir(gua::math::random::get(-1.f, 1.f),
@@ -44,12 +41,12 @@ std::vector<std::shared_ptr<gua::GroupNode>> add_lights(gua::SceneGraph& graph,
       loader.create_geometry_from_file(
       "sphere" + gua::string_utils::to_string(i),
       "data/objects/light_sphere.obj",
-      "White"
+      "data/materials/White.gmd"
     ));
 
     sphere_geometry->scale(0.04, 0.04, 0.04);
 
-    lights[i] = graph.add_node("/", std::make_shared<gua::GroupNode>("light" + gua::string_utils::to_string(i)));
+    lights[i] = graph.add_node("/", std::make_shared<gua::TransformNode>("light" + gua::string_utils::to_string(i)));
     lights[i]->add_child(sphere_geometry);
     lights[i]->translate(randdir[0], randdir[1], randdir[2]);
 
@@ -67,20 +64,21 @@ void setup_scene(gua::SceneGraph& graph,
   if (depth_count > 0) {
     gua::GeometryLoader loader;
 
+    float offset(2.f);
     std::vector<gua::math::vec3> directions = {
-      gua::math::vec3(0, 1, 0),
-      gua::math::vec3(0, -1, 0),
-      gua::math::vec3(1, 0, 0),
-      gua::math::vec3(-1, 0, 0),
-      gua::math::vec3(0, 0, 1),
-      gua::math::vec3(0, 0, -1)
+      gua::math::vec3(0, offset, 0),
+      gua::math::vec3(0, -offset, 0),
+      gua::math::vec3(offset, 0, 0),
+      gua::math::vec3(-offset, 0, 0),
+      gua::math::vec3(0, 0, offset),
+      gua::math::vec3(0, 0, -offset)
     };
 
     for (auto direction: directions) {
       auto monkey_geometry(loader.create_geometry_from_file(
         "monkey",
         geometry,
-        "Stones"
+        "data/materials/Stones.gmd"
       ));
 
       auto monkey = root_monkey->add_child(monkey_geometry);
@@ -108,7 +106,7 @@ int main(int argc, char** argv) {
   auto monkey_geometry(loader.create_geometry_from_file(
     "root_ape",
     geometry,
-    "Stones"
+    "data/materials/Stones.gmd"
   ));
 
   auto root_monkey = graph.add_node("/", monkey_geometry);
@@ -129,21 +127,30 @@ int main(int argc, char** argv) {
   screen->data.set_size(gua::math::vec2(1.6, 0.9));
   screen->translate(0, 0, 1.f);
 
-  auto view = graph.add_node<gua::ViewNode>("/", "view");
-  view->data.set_stereo_width(0.1f);
-  view->translate(0, 0, 2.5);
+  auto eye = graph.add_node<gua::TransformNode>("/", "eye");
+  eye->translate(0, 0, 2.5);
 
   unsigned width = 1500;
   unsigned height = 1500 * 9 / 16;
 
   auto pipe = new gua::Pipeline();
-  pipe->config.set_camera(gua::Camera("/view", "/screen", "main_scenegraph"));
+  pipe->config.set_camera(gua::Camera("/eye", "/eye",
+                                      "/screen", "/screen",
+                                      "main_scenegraph"));
   pipe->config.set_left_resolution(gua::math::vec2ui(width, height));
+  pipe->config.set_enable_fps_display(true);
+  pipe->config.set_enable_frustum_culling(true);
+
   pipe->config.set_enable_ssao(true);
   pipe->config.set_ssao_intensity(2.f);
-  pipe->config.set_enable_fps_display(true);
   pipe->config.set_enable_fxaa(true);
-  pipe->config.set_enable_frustum_culling(false);
+  pipe->config.set_enable_hdr(true);
+  pipe->config.set_hdr_key(5.f);
+  pipe->config.set_enable_bloom(true);
+  pipe->config.set_bloom_radius(10.f);
+  pipe->config.set_bloom_threshold(0.8f);
+  pipe->config.set_bloom_intensity(0.8f);
+
 
   auto window(new gua::Window());
   window->config.set_size(gua::math::vec2ui(width, height));
@@ -160,22 +167,27 @@ int main(int argc, char** argv) {
   timer.start();
 
   double time(0);
-  float desired_frame_time(1.0 / 60.0);
+  double desired_frame_time(1.0 / 60.0);
 
   // application loop
-  gua::events::Ticker ticker(desired_frame_time);
+  gua::events::MainLoop loop;
+
+  gua::events::Ticker ticker(loop, desired_frame_time);
 
   ticker.on_tick.connect([&]() {
     double frame_time(timer.get_elapsed());
     time += frame_time;
     timer.reset();
 
-    // for (auto it(graph.begin()); it != graph.end(); ++it) {
-    //   gua::GeometryNode* node(dynamic_cast<gua::GeometryNode*>(*it));
-    //   if (node) {
-    //     node->rotate(frame_time * 3, 1, 1, 0);
-    //   }
-    // }
+    std::function<void (std::shared_ptr<gua::Node>, int)> rotate;
+    rotate = [&](std::shared_ptr<gua::Node> node, int depth) {
+      node->rotate(frame_time * (1+depth) * 0.5, 1, 1, 0);
+      for (auto child: node->get_children()) {
+        rotate(child, ++depth);
+      }
+    };
+
+    rotate(graph["/root_ape"], 1);
 
     for (int i = 0; i < lights.size(); ++i) {
       lights[i]->rotate(
@@ -188,7 +200,6 @@ int main(int argc, char** argv) {
     renderer.queue_draw({&graph});
   });
 
-  gua::events::MainLoop loop;
   loop.start();
 
   return 0;
