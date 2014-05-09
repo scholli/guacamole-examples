@@ -59,8 +59,7 @@ int main(int argc, char** argv) {
   graph.add_node("/video", video_geode);
   graph.add_node("/mesh", mesh_geode);
   graph.add_node("/nurbs", nurbs_geode);
-  graph.add_node("/center", center_geode);
-  
+
   //auto light = graph.add_node<gua::SunLightNode>("/", "light");
   //light->data.set_enable_shadows(true);
   //light->data.set_shadow_map_size(256);
