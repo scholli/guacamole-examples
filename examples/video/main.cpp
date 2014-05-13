@@ -34,20 +34,22 @@
 int main(int argc, char** argv) {
 
   // initialize guacamole
-  gua::init(argc, argv);
+  int argc_d = 0;
+  char** argv_d = {};
+  gua::init(argc_d, argv_d);
 
-  gua::ShadingModelDatabase::load_shading_models_from("../data/materials/");
-  gua::MaterialDatabase::load_materials_from("../data/materials/");
-  gua::TextureDatabase::instance()->load("../data/textures/0001MM_diff.jpg");
+  gua::ShadingModelDatabase::load_shading_models_from("data/materials/");
+  gua::MaterialDatabase::load_materials_from("data/materials/");
+  gua::TextureDatabase::instance()->load("data/textures/0001MM_diff.jpg");
 
   // setup scene
   gua::SceneGraph graph("main_scenegraph");
 
   gua::GeometryLoader loader;
 
-  auto video_geode (loader.create_geometry_from_file("steppo", "../data/steppo_video/shot_steppo.ks", "gua_video3d", gua::GeometryLoader::DEFAULTS));
-  auto mesh_geode (loader.create_geometry_from_file("teapot", "../data/objects/teapot.obj", "../data/materials/Red.gmd", gua::GeometryLoader::DEFAULTS));
-  auto nurbs_geode (loader.create_geometry_from_file("nurbs", "../data/objects/teapot.igs", "../data/materials/Orange.gmd", gua::GeometryLoader::DEFAULTS));
+  auto video_geode (loader.create_geometry_from_file("steppo", /*"data/kinecting_examples/kinect_surfaceLCDNew.ks"*/argv[1], "gua_video3d", gua::GeometryLoader::DEFAULTS));
+  auto mesh_geode (loader.create_geometry_from_file("teapot", "data/objects/teapot.obj", "data/materials/Red.gmd", gua::GeometryLoader::DEFAULTS));
+  auto nurbs_geode (loader.create_geometry_from_file("nurbs", "data/objects/teapot.igs", "data/materials/Orange.gmd", gua::GeometryLoader::DEFAULTS));
 
   auto steppo = graph.add_node("/", video_geode);
   steppo->translate(-0.5f, -0.5f, 0.f);
@@ -58,7 +60,7 @@ int main(int argc, char** argv) {
 
   graph.add_node("/video", video_geode);
   graph.add_node("/mesh", mesh_geode);
-  graph.add_node("/nurbs", nurbs_geode);
+  //graph.add_node("/nurbs", nurbs_geode);
 
   //auto light = graph.add_node<gua::SunLightNode>("/", "light");
   //light->data.set_enable_shadows(true);
@@ -70,12 +72,15 @@ int main(int argc, char** argv) {
   screen->translate(0, 0, 6.f);
 
   auto eye = graph.add_node<gua::TransformNode>("/", "eye");
-  eye->translate(0, 0, 7);
+  eye->translate(-0.05, 0, 7);
+
+  auto eye2 = graph.add_node<gua::TransformNode>("/", "eye2");
+  eye2->translate(0.05, 0, 7);
 
   auto quad = graph.add_node<gua::TexturedQuadNode>("/", "quad");
   quad->translate(0.5f, 0.0, -1.f);
   quad->scale(2.0f);
-  quad->data.set_texture("../data/textures/0001MM_diff.jpg");
+  quad->data.set_texture("data/textures/0001MM_diff.jpg");
 
 #if 1
 
@@ -89,7 +94,8 @@ int main(int argc, char** argv) {
   spotlight->data.set_falloff(0.3f);
   spotlight->data.set_shadow_offset(0.005f);
   spotlight->data.set_color({ 1.0f, 1.0f, 1.0f });
-  spotlight->data.set_enable_shadows(true);
+  //spotlight->data.set_enable_shadows(true);
+  spotlight->data.set_enable_shadows(false);
   spotlight->data.set_enable_specular_shading(true);
   spotlight->data.set_enable_diffuse_shading(true);
 #else
@@ -103,16 +109,18 @@ int main(int argc, char** argv) {
 
 #endif
 
-  unsigned width = 1920;
-  unsigned height = 1080;
+  unsigned width = 1280;
+  unsigned height = 720;
 
   auto pipe = new gua::Pipeline();
 
-  pipe->config.set_camera(gua::Camera("/eye", "/eye",
+  pipe->config.set_camera(gua::Camera("/eye", "/eye2",
     "/screen", "/screen",
     "main_scenegraph"));
   pipe->config.set_left_resolution(gua::math::vec2ui(width, height));
+  pipe->config.set_right_resolution(gua::math::vec2ui(width, height));
   pipe->config.set_enable_fps_display(true);
+  //pipe->config.set_enable_stereo(true);
   pipe->config.set_enable_frustum_culling(false);
   pipe->config.set_enable_backface_culling(false);
   pipe->config.set_enable_preview_display(true);
@@ -124,9 +132,11 @@ int main(int argc, char** argv) {
   pipe->config.set_background_color(gua::utils::Color3f(0.0, 0.0f, 0.0f));
 
   auto window(new gua::Window);
-  window->config.set_display_name("\\\\.\\DISPLAY1");
+  window->config.set_display_name(":0.0");
   window->config.set_size(gua::math::vec2ui(width, height));
   window->config.set_left_resolution(gua::math::vec2ui(width, height));
+  window->config.set_right_resolution(gua::math::vec2ui(width, height));
+  //window->config.set_stereo_mode(gua::StereoMode::ANAGLYPH_RED_CYAN);
   window->config.set_enable_vsync(true);
 
   pipe->set_window(window);
