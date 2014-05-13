@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
   pipe->config.set_left_resolution(gua::math::vec2ui(width, height));
   pipe->config.set_right_resolution(gua::math::vec2ui(width, height));
   pipe->config.set_enable_fps_display(true);
-  pipe->config.set_enable_stereo(true);
+  //pipe->config.set_enable_stereo(true);
   pipe->config.set_enable_frustum_culling(false);
   pipe->config.set_enable_backface_culling(false);
   pipe->config.set_enable_preview_display(true);
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
   window->config.set_size(gua::math::vec2ui(width, height));
   window->config.set_left_resolution(gua::math::vec2ui(width, height));
   window->config.set_right_resolution(gua::math::vec2ui(width, height));
-  window->config.set_stereo_mode(gua::StereoMode::ANAGLYPH_RED_CYAN);
+  //window->config.set_stereo_mode(gua::StereoMode::ANAGLYPH_RED_CYAN);
   window->config.set_enable_vsync(true);
 
   pipe->set_window(window);
