@@ -29,12 +29,14 @@ int main(int argc, char** argv) {
   // initialize guacamole
   gua::init(argc, argv);
 
+  //gua::ShadingModelDatabase::load_shading_models_from("data/materials/");
+  gua::MaterialDatabase::load_materials_from("data/materials/");
+
   // setup scene
   gua::SceneGraph graph("main_scenegraph");
 
-  gua::GeometryLoader loader;
-  auto teapot_geometry(loader.create_geometry_from_file("teapot", "data/objects/teapot.obj", "data/materials/Red.gmd", gua::GeometryLoader::NORMALIZE_POSITION | gua::GeometryLoader::NORMALIZE_SCALE));
-
+  gua::TriMeshLoader loader;
+  auto teapot_geometry(loader.create_geometry_from_file("teapot", "data/objects/teapot.obj", "data/materials/Red.gmd", gua::TriMeshLoader::NORMALIZE_POSITION | gua::TriMeshLoader::NORMALIZE_SCALE));
   auto teapot = graph.add_node("/", teapot_geometry);
 
   auto light = graph.add_node<gua::PointLightNode>("/", "light");

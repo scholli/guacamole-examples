@@ -33,9 +33,14 @@ include(find_guacamole)
 
 include(define_macros)
 
-include(find_schism)
-include(find_boost)
-include(find_bullet)
+set(GUACAMOLE_EXT_DIR ${GUACAMOLE_INCLUDE_DIRS}/..)
+list(APPEND CMAKE_MODULE_PATH ${GUACAMOLE_INCLUDE_DIRS}/../cmake/modules)
+set(BULLET_ROOT ${GUACAMOLE_EXT_DIR}/externals)
+
+include(findSchism)
+include(findBoost)
+include(findJson)
+include(findBullet)
 
 if (UNIX)
   pkg_check_modules(ASSIMP REQUIRED assimp)

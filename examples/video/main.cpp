@@ -26,6 +26,10 @@
 
 #include <gua/platform.hpp>
 
+#include <gua/renderer/TriMeshLoader.hpp>
+#include <gua/renderer/NURBSLoader.hpp>
+#include <gua/renderer/Video3DLoader.hpp>
+
 #include <thread>
 #include <chrono>
 #include <cmath>
@@ -38,34 +42,31 @@ int main(int argc, char** argv) {
   char** argv_d = {};
   gua::init(argc_d, argv_d);
 
-  gua::ShadingModelDatabase::load_shading_models_from("data/materials/");
-  gua::MaterialDatabase::load_materials_from("data/materials/");
-  gua::TextureDatabase::instance()->load("data/textures/0001MM_diff.jpg");
+  //gua::ShadingModelDatabase::load_shading_models_from("data/materials/");
+  //gua::MaterialDatabase::load_materials_from("data/materials/");
+  //gua::TextureDatabase::instance()->load("data/textures/0001MM_diff.jpg");
 
   // setup scene
   gua::SceneGraph graph("main_scenegraph");
 
-  gua::GeometryLoader loader;
+  gua::TriMeshLoader trimeshloader;
+  gua::NURBSLoader nurbsloader;
+  gua::Video3DLoader videoloader;
 
-  auto video_geode (loader.create_geometry_from_file("steppo", /*"data/kinecting_examples/kinect_surfaceLCDNew.ks"*/argv[1], "gua_video3d", gua::GeometryLoader::DEFAULTS));
-  auto mesh_geode (loader.create_geometry_from_file("teapot", "data/objects/teapot.obj", "data/materials/Red.gmd", gua::GeometryLoader::DEFAULTS));
-  auto nurbs_geode (loader.create_geometry_from_file("nurbs", "data/objects/teapot.igs", "data/materials/Orange.gmd", gua::GeometryLoader::DEFAULTS));
-
-  auto steppo = graph.add_node("/", video_geode);
-  steppo->translate(-0.5f, -0.5f, 0.f);
+  auto video_geode(videoloader.create_geometry_from_file("steppo", argv[1]));
+  auto mesh_geode(trimeshloader.create_geometry_from_file("teapot", "data/objects/teapot.obj", "data/materials/Red.gmd", gua::TriMeshLoader::DEFAULTS));
+  auto plate_geode(trimeshloader.create_geometry_from_file("plate", "data/objects/plate.obj", "data/materials/White.gmd", gua::TriMeshLoader::DEFAULTS));
+  auto nurbs_geode(nurbsloader.create_geometry_from_file("nurbs", "data/objects/teapot.igs", "data/materials/Orange.gmd", gua::NURBSLoader::DEFAULTS));
 
   auto video = graph.add_node<gua::TransformNode>("/", "video");
   auto mesh = graph.add_node<gua::TransformNode>("/", "mesh");
   auto nurbs = graph.add_node<gua::TransformNode>("/", "nurbs");
+  auto plate = graph.add_node<gua::TransformNode>("/", "plate");
 
   graph.add_node("/video", video_geode);
   graph.add_node("/mesh", mesh_geode);
-  //graph.add_node("/nurbs", nurbs_geode);
-
-  //auto light = graph.add_node<gua::SunLightNode>("/", "light");
-  //light->data.set_enable_shadows(true);
-  //light->data.set_shadow_map_size(256);
-  //light->translate(0.0, 100.0, 0.0);
+  graph.add_node("/nurbs", nurbs_geode);
+  graph.add_node("/plate", plate_geode);
 
   auto screen = graph.add_node<gua::ScreenNode>("/", "screen");
   screen->data.set_size(gua::math::vec2(1.6, 0.9));
@@ -82,7 +83,14 @@ int main(int argc, char** argv) {
   quad->scale(2.0f);
   quad->data.set_texture("data/textures/0001MM_diff.jpg");
 
-#if 1
+#if 0
+
+  auto sunlight = graph.add_node<gua::SunLightNode>("/", "sunlight");
+  sunlight->data.set_shadow_map_size(1024);
+  sunlight->data.set_shadow_offset(0.005f);
+  sunlight->data.set_enable_shadows(true);
+  //sunlight->rotate(-90, 1, 0, 0);
+#endif
 
 #if 1
   auto spotlight = graph.add_node<gua::SpotLightNode>("/", "spotlight");
@@ -95,18 +103,9 @@ int main(int argc, char** argv) {
   spotlight->data.set_shadow_offset(0.005f);
   spotlight->data.set_color({ 1.0f, 1.0f, 1.0f });
   //spotlight->data.set_enable_shadows(true);
-  spotlight->data.set_enable_shadows(false);
+  spotlight->data.set_enable_shadows(true);
   spotlight->data.set_enable_specular_shading(true);
   spotlight->data.set_enable_diffuse_shading(true);
-#else
-
-  auto sunlight = graph.add_node<gua::SunLightNode>("/", "spotlight");
-  sunlight->data.set_shadow_map_size(1024);
-  sunlight->data.set_shadow_offset(0.005f);
-  sunlight->data.set_enable_shadows(true);
-  sunlight->rotate(-90, 1, 0, 0);
-#endif  
-
 #endif
 
   unsigned width = 1900;
@@ -132,7 +131,12 @@ int main(int argc, char** argv) {
   pipe->config.set_background_color(gua::utils::Color3f(0.0, 0.0f, 0.0f));
 
   auto window(new gua::Window);
+
+#if WIN32
+  window->config.set_display_name("\\\\.\\DISPLAY1");
+#else
   window->config.set_display_name(":0.0");
+#endif
   window->config.set_size(gua::math::vec2ui(width, height));
   window->config.set_left_resolution(gua::math::vec2ui(width, height));
   window->config.set_right_resolution(gua::math::vec2ui(width, height));
@@ -143,34 +147,45 @@ int main(int argc, char** argv) {
 
   gua::Renderer renderer({ pipe });
 
-  steppo->translate(-1.0, -0.4, 0.0);
-  steppo->scale(1.5f);
-  //
   auto bbox = mesh_geode->get_bounding_box();
   
   mesh->translate(-bbox.center());
-  mesh->scale(3.0f / std::sqrt(bbox.size(0)*bbox.size(0) +
+  mesh->scale(5.0f / std::sqrt(bbox.size(0)*bbox.size(0) +
     bbox.size(1)*bbox.size(1) +
     bbox.size(2)*bbox.size(2)));
   
-  mesh->translate(gua::math::vec3{ 0.0f, -0.5f, 0.0f });
+  mesh->translate(gua::math::vec3{ -2.0f, -1.5f, -4.0f });
 
   bbox = nurbs_geode->get_bounding_box();
 
   nurbs->translate(-bbox.center());
-  nurbs->scale(3.0f / std::sqrt(bbox.size(0)*bbox.size(0) +
+  nurbs->scale(5.0f / std::sqrt(bbox.size(0)*bbox.size(0) +
     bbox.size(1)*bbox.size(1) +
     bbox.size(2)*bbox.size(2)));
   nurbs->rotate(-90, 1, 0, 0);
-  
-  nurbs->translate(gua::math::vec3{2.0f, -0.5f, 0.0f });
+  nurbs->translate(gua::math::vec3{ 3.0f, -1.5f, -4.0f });
+
+  plate->scale(0.07);
+  plate->translate(0.0f, -4.0f, -4.0f);  
+
+  float time_value = 0;
 
   // application loop
   while (true) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    video_geode->rotate(0.1, 0, 1, 0);
+    scm::math::mat4f ident;
+    scm::math::set_identity(ident);
+    video->set_transform(ident);
 
+    video->scale(2.0f + std::sin(time_value));
+    video->rotate(10.0f*time_value, 0, 1, 0);
+    video->translate(0, -2.0, -2.0);
+
+    time_value += 0.01f;
+
+    video_geode->rotate(0.1, 0, 1, 0);
+    
     mesh_geode->rotate(0.3, 0, 1, 0);
 
     nurbs_geode->rotate(0.3, 0, 0, 1);
