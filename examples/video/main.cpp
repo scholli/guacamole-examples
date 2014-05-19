@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   auto quad = graph.add_node<gua::TexturedQuadNode>("/", "quad");
   quad->translate(0.5f, 0.0, -1.f);
   quad->scale(2.0f);
-  quad->data.set_texture("data/textures/0001MM_diff.jpg");
+  quad->set_texture("data/textures/0001MM_diff.jpg");
 
 #if 0
 
@@ -89,7 +89,8 @@ int main(int argc, char** argv) {
   sunlight->data.set_shadow_map_size(1024);
   sunlight->data.set_shadow_offset(0.005f);
   sunlight->data.set_enable_shadows(true);
-  //sunlight->rotate(-90, 1, 0, 0);
+  sunlight->rotate(-90, 1, 0, 0);
+  sunlight->translate(0, 0, -5);
 #endif
 
 #if 1
@@ -186,6 +187,8 @@ int main(int argc, char** argv) {
 
     video_geode->rotate(0.1, 0, 1, 0);
     
+    quad->rotate(0.01, 0, 1, 0);
+
     mesh_geode->rotate(0.3, 0, 1, 0);
 
     nurbs_geode->rotate(0.3, 0, 0, 1);
