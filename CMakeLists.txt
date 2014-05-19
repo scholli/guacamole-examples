@@ -35,12 +35,19 @@ include(define_macros)
 
 set(GUACAMOLE_EXT_DIR ${GUACAMOLE_INCLUDE_DIRS}/..)
 list(APPEND CMAKE_MODULE_PATH ${GUACAMOLE_INCLUDE_DIRS}/../cmake/modules)
+
+if (UNIX)
+	set(BULLET_ROOT /opt/bullet/default)
+elseif (WIN32)
+	set(BULLET_ROOT ${GUACAMOLE_EXT_DIR}/externals)
+endif (UNIX)
+
 set(BULLET_ROOT ${GUACAMOLE_EXT_DIR}/externals)
 
-include(findSchism)
-include(findBoost)
-include(findJson)
-include(findBullet)
+include(FindSchism)
+include(FindBoost)
+include(FindJson)
+include(FindBullet)
 
 if (UNIX)
   pkg_check_modules(ASSIMP REQUIRED assimp)

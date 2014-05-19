@@ -36,7 +36,7 @@ std::vector<std::shared_ptr<gua::TransformNode>> add_lights(gua::SceneGraph& gra
                             gua::math::random::get(-1.f, 1.f));
     scm::math::normalize(randdir);
 
-    gua::GeometryLoader loader;
+    gua::TriMeshLoader loader;
     auto sphere_geometry(
       loader.create_geometry_from_file(
       "sphere" + gua::string_utils::to_string(i),
@@ -62,7 +62,7 @@ void setup_scene(gua::SceneGraph& graph,
                  int depth_count) {
 
   if (depth_count > 0) {
-    gua::GeometryLoader loader;
+    gua::TriMeshLoader loader;
 
     float offset(2.f);
     std::vector<gua::math::vec3> directions = {
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
   // setup scene
   gua::SceneGraph graph("main_scenegraph");
 
-  gua::GeometryLoader loader;
+  gua::TriMeshLoader loader;
 
   auto monkey_geometry(loader.create_geometry_from_file(
     "root_ape",
