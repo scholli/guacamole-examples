@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
   gua::SceneGraph graph("main_scenegraph");
 
   gua::TriMeshLoader loader;
-  auto teapot_geometry(loader.create_geometry_from_file("teapot", "data/objects/teapot.obj", "data/materials/Red.gmd", gua::TriMeshLoader::NORMALIZE_POSITION | gua::TriMeshLoader::NORMALIZE_SCALE));
+  auto teapot_geometry(loader.create_geometry_from_file("teapot", "data/objects/teapot.igs", "data/materials/Red.gmd", gua::TriMeshLoader::NORMALIZE_POSITION | gua::TriMeshLoader::NORMALIZE_SCALE));
   auto teapot = graph.add_node("/", teapot_geometry);
 
   auto light = graph.add_node<gua::PointLightNode>("/", "light");

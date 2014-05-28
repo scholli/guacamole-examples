@@ -28,7 +28,6 @@
 
 #include <gua/renderer/TriMeshLoader.hpp>
 #include <gua/renderer/NURBSLoader.hpp>
-#include <gua/renderer/Video3DLoader.hpp>
 
 #include <thread>
 #include <chrono>
@@ -62,10 +61,6 @@ int main(int argc, char** argv) {
   int argc_d = 0;
   char** argv_d = {};
   gua::init(argc_d, argv_d);
-
-  //gua::ShadingModelDatabase::load_shading_models_from("data/materials/");
-  //gua::MaterialDatabase::load_materials_from("data/materials/");
-  //gua::TextureDatabase::instance()->load("data/textures/0001MM_diff.jpg");
 
   // setup scene
   gua::SceneGraph graph("main_scenegraph");
@@ -122,15 +117,6 @@ int main(int argc, char** argv) {
   quad->scale(2.0f);
   quad->set_texture("data/textures/0001MM_diff.jpg");
 
-#if 0
-
-  auto sunlight = graph.add_node<gua::SunLightNode>("/", "sunlight");
-  sunlight->data.set_shadow_map_size(1024);
-  sunlight->data.set_shadow_offset(0.005f);
-  sunlight->data.set_enable_shadows(true);
-  sunlight->rotate(-90, 1, 0, 0);
-  sunlight->translate(0, 0, -5);
-#endif
 
 #if 1
   auto spotlight = graph.add_node<gua::SpotLightNode>("/", "spotlight");
