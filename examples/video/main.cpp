@@ -100,27 +100,22 @@ int main(int argc, char** argv) {
   eye2->translate(0.05, 0, 7);
 
   auto eye3 = graph.add_node<gua::TransformNode>("/", "eye3");
-  eye3->translate(-0.05, 1, 7);
+  eye3->translate(-0.05, 0, 7.5);
 
   auto eye4 = graph.add_node<gua::TransformNode>("/", "eye4");
-  eye4->translate(0.05, 1, 7);
+  eye4->translate(0.05, 0, 7.5);
 
   auto eye5 = graph.add_node<gua::TransformNode>("/", "eye5");
-  eye5->translate(-0.05, -1, 7);
+  eye5->translate(-0.05, 0, 6.5);
 
   auto eye6 = graph.add_node<gua::TransformNode>("/", "eye6");
-  eye6->translate(0.05, -1, 7);
+  eye6->translate(0.05, 0, 6.5);
 
   auto eye7 = graph.add_node<gua::TransformNode>("/", "eye7");
-  eye7->translate(-0.05, 0, 6.5);
+  eye7->translate(-0.05, 0, 8.5);
 
   auto eye8 = graph.add_node<gua::TransformNode>("/", "eye8");
-  eye8->translate(0.05, 0, 6.5);
-
-  auto quad = graph.add_node<gua::TexturedQuadNode>("/", "quad");
-  quad->translate(0.5f, 0.0, -1.f);
-  quad->scale(2.0f);
-  quad->set_texture("data/textures/0001MM_diff.jpg");
+  eye8->translate(0.05, 0, 8.5);
 
 #if 0
 
@@ -150,8 +145,8 @@ int main(int argc, char** argv) {
 
   auto pipe  = new gua::Pipeline();
   auto pipe2 = new gua::Pipeline();
-  //auto pipe3 = new gua::Pipeline();
-  //auto pipe4 = new gua::Pipeline();
+  auto pipe3 = new gua::Pipeline();
+  auto pipe4 = new gua::Pipeline();
 
   pipe->config.set_camera(gua::Camera("/eye", "/eye2",
     "/screen", "/screen",
@@ -159,31 +154,31 @@ int main(int argc, char** argv) {
   pipe2->config.set_camera(gua::Camera("/eye3", "/eye4",
     "/screen", "/screen",
     "main_scenegraph"));
-  //pipe3->config.set_camera(gua::Camera("/eye5", "/eye6",
-  //  "/screen", "/screen",
-  //  "main_scenegraph"));
-  //pipe4->config.set_camera(gua::Camera("/eye7", "/eye8",
-  //  "/screen", "/screen",
-  //  "main_scenegraph"));
+  pipe3->config.set_camera(gua::Camera("/eye5", "/eye6",
+    "/screen", "/screen",
+    "main_scenegraph"));
+  pipe4->config.set_camera(gua::Camera("/eye7", "/eye8",
+    "/screen", "/screen",
+    "main_scenegraph"));
 
   unsigned width = 800;
   unsigned height = 600;
 
   set_pipe_defaults(pipe , width, height); 
   set_pipe_defaults(pipe2, width, height); 
-  //set_pipe_defaults(pipe3, width, height);
-  //set_pipe_defaults(pipe4, width, height);
+  set_pipe_defaults(pipe3, width, height);
+  set_pipe_defaults(pipe4, width, height);
 
   auto window (new gua::Window);
   auto window2(new gua::Window);
-  //auto window3(new gua::Window);
-  //auto window4(new gua::Window);
+  auto window3(new gua::Window);
+  auto window4(new gua::Window);
 
 #if WIN32
   window->config.set_display_name("\\\\.\\DISPLAY1");
   window2->config.set_display_name("\\\\.\\DISPLAY1");
-  //window3->config.set_display_name("\\\\.\\DISPLAY1");
-  //window4->config.set_display_name("\\\\.\\DISPLAY1");
+  window3->config.set_display_name("\\\\.\\DISPLAY1");
+  window4->config.set_display_name("\\\\.\\DISPLAY1");
 #else
   window->config.set_display_name(":0.0");
   window2->config.set_display_name(":0.0");
@@ -194,19 +189,19 @@ int main(int argc, char** argv) {
 
   set_window_default(window, width, height);
   set_window_default(window2, width, height);
-  //set_window_default(window3, width, height);
-  //set_window_default(window4, width, height);
+  set_window_default(window3, width, height);
+  set_window_default(window4, width, height);
   
   
   pipe->set_window(window);
   pipe2->set_window(window2);
-  //pipe3->set_window(window3);
-  //pipe4->set_window(window4);
+  pipe3->set_window(window3);
+  pipe4->set_window(window4);
 
   gua::Renderer renderer({ pipe, 
-                           pipe2//, 
-                           //pipe3, 
-                           //pipe4
+                           pipe2, 
+                           pipe3, 
+                           pipe4
                          });
 
   // transform teapot
@@ -249,8 +244,6 @@ int main(int argc, char** argv) {
    time_value += 0.01f;
    
    video_geode->rotate(0.1, 0, 1, 0);
-   
-   quad->rotate(0.01, 0, 1, 0);
    
    teapot_geode->rotate(0.3, 0, 1, 0);
    
