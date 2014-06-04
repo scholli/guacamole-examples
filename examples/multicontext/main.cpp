@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 
   //graph.add_node("/video", video_geode);
   graph.add_node("/teapot", teapot_geode);
-  //graph.add_node("/nurbs", nurbs_geode);
+  graph.add_node("/nurbs", nurbs_geode);
   graph.add_node("/plate", plate_geode);
 
   auto screen = graph.add_node<gua::ScreenNode>("/", "screen");
