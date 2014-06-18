@@ -34,6 +34,9 @@
 #include <chrono>
 #include <cmath>
 
+#define TEST_MULTICONTEXT 1
+#define TEST_DISTRIBUTION 1
+
 void set_pipe_defaults(gua::Pipeline* pipe, unsigned width, unsigned height)
 {
   pipe->config.set_left_resolution(gua::math::vec2ui(width, height));
@@ -42,7 +45,7 @@ void set_pipe_defaults(gua::Pipeline* pipe, unsigned width, unsigned height)
   pipe->config.set_enable_frustum_culling(true);
   pipe->config.set_enable_backface_culling(true);
   pipe->config.set_enable_preview_display(true);
-  pipe->config.set_enable_bbox_display(true);
+  pipe->config.set_enable_bbox_display(false);
   pipe->config.set_near_clip(0.2f);
   pipe->config.set_far_clip(1000.0f);
   pipe->config.set_background_color(gua::utils::Color3f(0.0, 0.0f, 0.0f));
@@ -55,6 +58,19 @@ void set_window_default(gua::Window* window, unsigned width, unsigned height)
   window->config.set_right_resolution(gua::math::vec2ui(width, height));
   window->config.set_enable_vsync(true);
 }
+
+void connect_node(gua::SceneGraph& graph,
+                  std::string const& name,
+                  std::shared_ptr<gua::Node> const& node,
+                  unsigned ms)
+{
+  std::chrono::milliseconds dura(ms);
+  std::this_thread::sleep_for(dura);
+
+  graph.add_node(name, node);
+}
+
+
 
 int main(int argc, char** argv) {
 
@@ -70,20 +86,31 @@ int main(int argc, char** argv) {
   gua::NURBSLoader nurbsloader;
   gua::Video3DLoader videoloader;
 
-  //auto video_geode(videoloader.create_geometry_from_file("video_geode", argv[1]));
+  auto video_geode(videoloader.create_geometry_from_file("video_geode", "data/kinect_resources/shot_steppo_animation_distributed_daedalos.ks"));
   auto teapot_geode(trimeshloader.create_geometry_from_file("teapot_geode", "data/objects/teapot.obj", "data/materials/Red.gmd", gua::TriMeshLoader::DEFAULTS));
+#if 0
+  auto plate_geode(trimeshloader.create_geometry_from_file("plate_geode", "data/objects/Medieval/Medieval_City.obj", "data/materials/White.gmd", gua::TriMeshLoader::DEFAULTS | gua::TriMeshLoader::LOAD_MATERIALS));
+#else
   auto plate_geode(trimeshloader.create_geometry_from_file("plate_geode", "data/objects/plate.obj", "data/materials/White.gmd", gua::TriMeshLoader::DEFAULTS));
+#endif
+  //auto plate_geode(trimeshloader.create_geometry_from_file("plate_geode", "data/objects/50Cent.obj", "data/materials/White.gmd", gua::TriMeshLoader::DEFAULTS | gua::TriMeshLoader::LOAD_MATERIALS));
+  auto coin_geode(trimeshloader.create_geometry_from_file("plate_geode", "data/objects/50Cent.obj", "data/materials/White.gmd", gua::TriMeshLoader::DEFAULTS | gua::TriMeshLoader::LOAD_MATERIALS));
   auto nurbs_geode(nurbsloader.create_geometry_from_file("nurbs_geode", "data/objects/teapot.igs", "data/materials/Orange.gmd", gua::NURBSLoader::DEFAULTS));
 
-  //auto video = graph.add_node<gua::TransformNode>("/", "video");
+  auto video = graph.add_node<gua::TransformNode>("/", "video");
   auto teapot = graph.add_node<gua::TransformNode>("/", "teapot");
   auto nurbs = graph.add_node<gua::TransformNode>("/", "nurbs");
   auto plate = graph.add_node<gua::TransformNode>("/", "plate");
+  auto coin = graph.add_node<gua::TransformNode>("/", "coin");
 
-  //graph.add_node("/video", video_geode);
+#if TEST_DISTRIBUTION
+#else
+  graph.add_node("/video", video_geode);
   graph.add_node("/teapot", teapot_geode);
   graph.add_node("/nurbs", nurbs_geode);
   graph.add_node("/plate", plate_geode);
+  graph.add_node("/coin", coin_geode);
+#endif
 
   auto screen = graph.add_node<gua::ScreenNode>("/", "screen");
   screen->data.set_size(gua::math::vec2(1.6, 0.9));
@@ -113,10 +140,10 @@ int main(int argc, char** argv) {
   auto eye8 = graph.add_node<gua::TransformNode>("/", "eye8");
   eye8->translate(0.05, 0, 6.7);
 
-  //auto quad = graph.add_node<gua::TexturedQuadNode>("/", "quad");
-  //quad->translate(0.5f, 0.0, -1.f);
-  //quad->scale(2.0f);
-  //quad->set_texture("data/textures/0001MM_diff.jpg");
+  auto quad = graph.add_node<gua::TexturedQuadNode>("/", "quad");
+  quad->translate(0.5f, 0.0, -7.f);
+  quad->scale(2.0f);
+  quad->set_texture("data/textures/0001MM_diff.jpg");
 
 
 #if 1
@@ -153,13 +180,13 @@ int main(int argc, char** argv) {
     "/screen", "/screen",
     "main_scenegraph"));
 
-  unsigned width = 800;
-  unsigned height = 600;
+  unsigned width = 1600;
+  unsigned height = 1200;
 
   set_pipe_defaults(pipe , width, height); 
-  set_pipe_defaults(pipe2, width, height); 
-  set_pipe_defaults(pipe3, width, height);
-  set_pipe_defaults(pipe4, width, height);
+  set_pipe_defaults(pipe2, width/2, height/2); 
+  set_pipe_defaults(pipe3, width/3, height/3);
+  set_pipe_defaults(pipe4, width/4, height/4);
 
   auto window (new gua::Window);
   auto window2(new gua::Window);
@@ -178,23 +205,25 @@ int main(int argc, char** argv) {
   window4->config.set_display_name(":0.0");
 #endif
 
-
-  set_window_default(window, width, height);
-  set_window_default(window2, width, height);
-  set_window_default(window3, width, height);
-  set_window_default(window4, width, height);
-  
+  set_window_default(window,  width, height);
+  set_window_default(window2, width/2, height/2);
+  set_window_default(window3, width/3, height/3);
+  set_window_default(window4, width/4, height/4);
   
   pipe->set_window(window);
   pipe2->set_window(window2);
   pipe3->set_window(window3);
   pipe4->set_window(window4);
 
+#if TEST_MULTICONTEXT
   gua::Renderer renderer({ pipe, 
                            pipe2, 
                            pipe3, 
                            pipe4
                          });
+#else
+  gua::Renderer renderer({ pipe });
+#endif
 
   // transform teapot
   auto bbox = teapot_geode->get_bounding_box();
@@ -217,39 +246,40 @@ int main(int argc, char** argv) {
   plate->scale(0.07);
   plate->translate(0.0f, -4.0f, -4.0f);  
 
+  coin->translate(0.0f, -1.0f, -4.0f);
+  coin_geode->translate(0.0f, -0.2f, -0.0f);
+
   float time_value = 0;
 
-  //nurbs_geode->translate(0.0f, 0.0f, 0.0f);
+#if TEST_DISTRIBUTION
+  std::thread t1(std::bind(connect_node, std::ref(graph), "/teapot", teapot_geode, 2000));
+  std::thread t2(std::bind(connect_node, std::ref(graph), "/plate", plate_geode, 4000));
+  std::thread t3(std::bind(connect_node, std::ref(graph), "/coin", coin_geode, 8000));
+  std::thread t4(std::bind(connect_node, std::ref(graph), "/nurbs", nurbs_geode, 8000));
+  std::thread t5(std::bind(connect_node, std::ref(graph), "/video", video_geode, 10000));
+#endif
 
   // application loop
   while (true) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-   scm::math::mat4f ident;
-   scm::math::set_identity(ident);
-   //video->set_transform(ident);
-   //
-   //video->scale(2.0f + std::sin(time_value));
-   //video->rotate(10.0f*time_value, 0, 1, 0);
-   //video->translate(0, -2.0, -2.0);
-   
    time_value += 0.01f;
-   
-   //video_geode->rotate(0.1, 0, 1, 0);
-   
-   //quad->rotate(0.01, 0, 1, 0);
+
+   quad->rotate(0.03, 0, 1, 0);
    
    teapot_geode->rotate(0.3, 0, 1, 0);
    
    nurbs_geode->rotate(0.3, 0, 0, 1);
 
    plate->translate(-plate->get_bounding_box().center());
-   plate->rotate(0.04f, 0, 1, 0);
+   plate->rotate(0.3f, 0, 1, 0);
    plate->translate(plate->get_bounding_box().center());
     
+   coin_geode->rotate(0.6f, 0, 1, 0);
+   coin_geode->rotate(0.8f, 1, 0, 0);
+
     renderer.queue_draw({ &graph });
   }
 
   return 0;
 }
-

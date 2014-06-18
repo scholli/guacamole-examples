@@ -56,16 +56,13 @@ void set_window_default(gua::Window* window, unsigned width, unsigned height)
   window->config.set_enable_vsync(true);
 }
 
+
 int main(int argc, char** argv) {
 
   // initialize guacamole
   int argc_d = 0;
   char** argv_d = {};
   gua::init(argc_d, argv_d);
-
-  //gua::ShadingModelDatabase::load_shading_models_from("data/materials/");
-  //gua::MaterialDatabase::load_materials_from("data/materials/");
-  //gua::TextureDatabase::instance()->load("data/textures/0001MM_diff.jpg");
 
   // setup scene
   gua::SceneGraph graph("main_scenegraph");
@@ -164,9 +161,9 @@ int main(int argc, char** argv) {
   unsigned width = 800;
   unsigned height = 600;
 
-  set_pipe_defaults(pipe , width, height); 
-  set_pipe_defaults(pipe2, width, height); 
-  set_pipe_defaults(pipe3, width, height);
+  set_pipe_defaults(pipe , width/2, height/2); 
+  set_pipe_defaults(pipe2, width/3, height/3); 
+  set_pipe_defaults(pipe3, width/4, height/4);
   set_pipe_defaults(pipe4, width, height);
 
   auto window (new gua::Window);
